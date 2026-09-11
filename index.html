@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Blue Strike: Football Match 3D Saga</title>
+  <title>Blue Strike: Football Match 3D Saga HD</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
@@ -14,7 +14,6 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLA PRINCIPAL CON FONDO DE ESTADIO */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at 50% 20%, #0044aa 0%, #001a40 60%, #000612 100%);
@@ -51,12 +50,12 @@
     .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 26px; letter-spacing: 3px; }
 
     .hero-avatar-box {
-      width: 200px; height: 180px; margin: 5px 0;
+      width: 210px; height: 190px; margin: 5px 0;
       position: relative; display: flex; justify-content: center; align-items: center;
       filter: drop-shadow(0 10px 25px rgba(0, 212, 255, 0.6));
     }
-    .hero-avatar-box svg {
-      width: 100%; height: 100%;
+    .hero-avatar-box img {
+      width: 100%; height: 100%; object-fit: contain;
       animation: freestyleAnim 1.8s infinite ease-in-out;
     }
 
@@ -168,7 +167,7 @@
     }
     .cell.selected { transform: scale(1.18); background: rgba(0, 212, 255, 0.5); border: 2px solid #ffffff; }
     .cell.exploding { transform: scale(0); opacity: 0; transition: transform 0.25s, opacity 0.25s; }
-    .cell svg { width: 38px; height: 38px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+    .cell img { width: 36px; height: 36px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
 
     .boosters-bar { display: flex; gap: 15px; margin: 10px 0 15px; }
     .booster-btn {
@@ -251,30 +250,7 @@
     </div>
 
     <div class="hero-avatar-box">
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="shirtGrad" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#00d4ff"/>
-            <stop offset="50%" stop-color="#0044cc"/>
-            <stop offset="100%" stop-color="#001144"/>
-          </radialGradient>
-          <radialGradient id="ballGrad" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="70%" stop-color="#cbd5e1"/>
-            <stop offset="100%" stop-color="#64748b"/>
-          </radialGradient>
-        </defs>
-        <path d="M55,95 L145,95 L135,160 L65,160 Z" fill="url(#shirtGrad)" stroke="#ffffff" stroke-width="3.5"/>
-        <rect x="88" y="95" width="24" height="65" fill="#ffffff"/>
-        <circle cx="100" cy="62" r="34" fill="#ffdbac"/>
-        <path d="M62,58 Q100,15 138,58 Q100,40 62,58 Z" fill="#00d4ff"/>
-        <rect x="74" y="52" width="52" height="18" rx="9" fill="#000d20" stroke="#00d4ff" stroke-width="2.5"/>
-        <circle cx="86" cy="61" r="4" fill="#ffffff"/>
-        <circle cx="114" cy="61" r="4" fill="#ffffff"/>
-        <path d="M88,80 Q100,92 112,80" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="100" cy="172" r="20" fill="url(#ballGrad)" stroke="#001a40" stroke-width="3"/>
-        <polygon points="100,160 108,168 105,180 95,180 92,168" fill="#0044cc"/>
-      </svg>
+      <img src="https://cdn-icons-png.flaticon.com/512/3068/3068327.png" alt="Futbolista Freestyle HD">
     </div>
 
     <div class="events-bar">
@@ -429,11 +405,11 @@
     }
 
     const ITEMS_3D = [
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g0" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#001144"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#g0)" stroke="#ffffff" stroke-width="3"/><polygon points="50,25 65,35 60,52 40,52 35,35" fill="#ffffff" opacity="0.95"/></svg>`,
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M50 12 L82 25 L82 58 C82 78, 50 90, 50 90 C50 90, 18 78, 18 58 L18 25 Z" fill="url(#g1)" stroke="#ffffff" stroke-width="3"/><circle cx="50" cy="48" r="12" fill="#ffffff"/></svg>`,
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g2" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M15 40 Q25 20 50 25 Q75 30 85 50 Q90 65 75 70 L20 70 Q10 60 15 40 Z" fill="url(#g2)" stroke="#ffffff" stroke-width="3"/><circle cx="30" cy="74" r="3" fill="#ffffff"/><circle cx="50" cy="74" r="3" fill="#ffffff"/><circle cx="70" cy="74" r="3" fill="#ffffff"/></svg>`,
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g3" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fffbeb"/><stop offset="50%" stop-color="#facc15"/><stop offset="100%" stop-color="#854d0e"/></radialGradient></defs><path d="M25 20 L75 20 L68 55 C68 68, 32 68, 32 55 Z" fill="url(#g3)" stroke="#ffffff" stroke-width="3"/><rect x="42" y="68" width="16" height="15" fill="#facc15"/><rect x="30" y="83" width="40" height="10" rx="3" fill="#854d0e"/></svg>`,
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g4" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fef08a"/><stop offset="60%" stop-color="#eab308"/><stop offset="100%" stop-color="#713f12"/></radialGradient></defs><rect x="22" y="15" width="56" height="70" rx="10" fill="url(#g4)" stroke="#ffffff" stroke-width="3"/></svg>`
+      `https://cdn-icons-png.flaticon.com/512/53/53283.png`,
+      `https://cdn-icons-png.flaticon.com/512/179/179249.png`,
+      `https://cdn-icons-png.flaticon.com/512/2871/2871210.png`,
+      `https://cdn-icons-png.flaticon.com/512/3112/3112946.png`,
+      `https://cdn-icons-png.flaticon.com/512/824/824734.png`
     ];
 
     const ROWS = 7, COLS = 7;
@@ -551,7 +527,9 @@
           cell.className = 'cell';
           cell.dataset.r = r; cell.dataset.c = c;
           if (selectedCell && selectedCell.r === r && selectedCell.c === c) cell.classList.add('selected');
-          if (board[r][c] !== null) cell.innerHTML = ITEMS_3D[board[r][c]];
+          if (board[r][c] !== null) {
+            cell.innerHTML = `<img src="${ITEMS_3D[board[r][c]]}" alt="Ficha">`;
+          }
           cell.onclick = () => onCellClick(r, c);
           grid.appendChild(cell);
         }
