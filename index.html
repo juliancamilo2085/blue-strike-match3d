@@ -1,1 +1,105 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <title>Blue Strike: Football Match 3D Saga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+  <!-- Aquí conectamos el diseño y los gráficos (Siguiente archivo) -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- 1. PANTALLA INICIAL (Desbloqueo de Audio y Carga) -->
+    <div id="startScreen" class="overlay-start">
+      <div class="game-logo">
+        <span class="logo-top">BLUE STRIKE</span>
+        <span class="logo-bottom">MATCH 3D SAGA</span>
+      </div>
+      <div class="hero-avatar" id="mainAvatar"></div>
+      <button class="btn-main" onclick="Game.init()">⚽ ENTRAR AL ESTADIO</button>
+      <p class="hint-text">Sube el volumen multimedia de tu celular 🔊</p>
+    </div>
+
+    <!-- 2. HUD SUPERIOR (Recursos) -->
+    <div class="top-navbar">
+      <div class="hud-pill">❤️ <span id="ui-lives">5</span></div>
+      <div class="hud-pill">🪙 <span id="ui-coins">0</span></div>
+      <div class="hud-pill">⭐ <span id="ui-stars">0</span></div>
+    </div>
+
+    <!-- 3. PANTALLA DEL MAPA DE NIVELES -->
+    <div id="mapView" class="view-screen">
+      <div class="header-title">TORNEO MUNDIAL</div>
+      <div class="world-map-container" id="pathContainer"></div>
+    </div>
+
+    <!-- 4. PANTALLA MI ESTADIO (Constructor) -->
+    <div id="stadiumView" class="view-screen hidden">
+      <div class="header-title">MI ESTADIO</div>
+      <div class="stadium-graphics" id="stadiumVisuals"></div>
+      <div class="stadium-upgrades" id="upgradesList"></div>
+    </div>
+
+    <!-- 5. PANTALLA DEL TABLERO DE JUEGO (Match-3) -->
+    <div id="gameView" class="view-screen hidden">
+      <div class="hud-game">
+        <div class="hud-pill">🏆 <span id="ui-level">1</span></div>
+        <div class="hud-pill">🎯 <span id="ui-score">0</span>/<span id="ui-goal">500</span></div>
+        <div class="hud-pill highlight">🔄 <span id="ui-moves">15</span></div>
+      </div>
+      
+      <!-- Contenedor del Tablero -->
+      <div class="grid-wrapper">
+        <div id="tutorialMsg" class="tutorial-box hidden"></div>
+        <div id="gridBoard" class="grid-board"></div>
+      </div>
+      
+      <!-- Boosters Inferiores -->
+      <div class="ingame-boosters">
+        <button class="btn-booster" onclick="Game.useBooster('hammer')">🔨</button>
+        <button class="btn-booster" onclick="Game.useBooster('shuffle')">🔀</button>
+      </div>
+      
+      <button class="btn-danger" onclick="Game.quitLevel()">RENDIRSE</button>
+    </div>
+
+    <!-- 6. NAVEGACIÓN INFERIOR (Pestañas) -->
+    <div class="bottom-nav">
+      <div class="nav-tab active" id="tabTorneo" onclick="Game.switchTab('torneo')">
+        <span class="nav-icon">🏆</span><span>TORNEO</span>
+      </div>
+      <div class="nav-tab" id="tabEstadio" onclick="Game.switchTab('estadio')">
+        <span class="nav-icon">🏟️</span><span>MI ESTADIO</span>
+      </div>
+    </div>
+
+    <!-- 7. MODALES Y POPUPS -->
+    <div id="msgCombo" class="combo-popup">¡GOLAZO!</div>
+    
+    <div id="modalWin" class="modal hidden">
+      <div class="modal-content">
+        <h2 class="title-win">¡VICTORIA!</h2>
+        <div class="stars-reward" id="winStars">⭐⭐⭐</div>
+        <p class="reward-text">+50 Monedas 🪙</p>
+        <button class="btn-main" onclick="Game.claimVictory()">CONTINUAR</button>
+      </div>
+    </div>
+
+    <div id="modalLose" class="modal hidden">
+      <div class="modal-content">
+        <h2 class="title-lose">¡FIN DEL TIEMPO!</h2>
+        <p class="reward-text">Te quedaste sin movimientos.</p>
+        <button class="btn-main" onclick="Game.quitLevel()">VOLVER AL MAPA</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Aquí conectamos la lógica del juego (Tercer archivo) -->
+  <script src="game.js"></script>
+</body>
+</html>
