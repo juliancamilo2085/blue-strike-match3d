@@ -1,20 +1,15 @@
 /* =========================================
-   BLUE STRIKE MATCH 3D - LÓGICA Y GRÁFICOS
+   BLUE STRIKE MATCH 3D - LÓGICA Y GRÁFICOS REALES
    ========================================= */
 
 const Game = (function() {
-  // 1. GRÁFICOS INCRUSTADOS (Imposible que se rompan)
+  // 1. GRÁFICOS 3D REALES (Alta Definición)
   const ITEMS = [
-    // 0: Balón 3D
-    `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="%23ffffff" stroke="%23001a40" stroke-width="3"/><polygon points="50,15 70,30 62,55 38,55 30,30" fill="%23001a40"/><path d="M50,15 L50,0 M70,30 L90,20 M62,55 L85,75 M38,55 L15,75 M30,30 L10,20" stroke="%23001a40" stroke-width="4"/></svg>')`,
-    // 1: Trofeo Oro
-    `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20,20 L80,20 L70,55 C70,75 30,75 30,55 Z" fill="%23facc15" stroke="%23854d0e" stroke-width="4"/><rect x="40" y="70" width="20" height="20" fill="%23eab308"/><path d="M20,20 C5,20 5,45 25,40 M80,20 C95,20 95,45 75,40" fill="none" stroke="%23facc15" stroke-width="8" stroke-linecap="round"/></svg>')`,
-    // 2: Guayo Verde
-    `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10,40 C30,20 60,30 80,45 C95,55 90,75 75,75 L15,75 C5,75 0,50 10,40 Z" fill="%2310b981" stroke="%23064e3b" stroke-width="4"/><circle cx="25" cy="80" r="5" fill="%23fff"/><circle cx="50" cy="80" r="5" fill="%23fff"/><circle cx="75" cy="80" r="5" fill="%23fff"/></svg>')`,
-    // 3: Escudo Azul
-    `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50,5 L90,20 L90,55 C90,85 50,95 50,95 C50,95 10,85 10,55 L10,20 Z" fill="%233b82f6" stroke="%231e3a8a" stroke-width="4"/><polygon points="50,30 65,50 40,50" fill="%23fff"/></svg>')`,
-    // 4: Tarjeta / Silbato (Roja)
-    `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="25" y="15" width="50" height="70" rx="8" fill="%23ef4444" stroke="%237f1d1d" stroke-width="4"/><circle cx="50" cy="50" r="10" fill="%23fff"/></svg>')`
+    `url('https://img.icons8.com/3d-fluency/250/soccer-ball.png')`,
+    `url('https://img.icons8.com/3d-fluency/250/trophy.png')`,
+    `url('https://img.icons8.com/3d-fluency/250/sneakers.png')`,
+    `url('https://img.icons8.com/3d-fluency/250/security-shield-green.png')`,
+    `url('https://img.icons8.com/3d-fluency/250/whistle.png')`
   ];
 
   // VARIABLES GLOBALES
@@ -27,7 +22,7 @@ const Game = (function() {
   let score = 0, goal = 500, moves = 15;
   let audioCtx = null;
 
-  // 2. SISTEMA DE AUDIO (Seguro para móviles)
+  // 2. SISTEMA DE AUDIO
   function playSound(type) {
     if(!audioCtx || audioCtx.state !== 'running') return;
     let osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
@@ -56,7 +51,7 @@ const Game = (function() {
     document.getElementById('ui-stars').innerText = stars;
   }
 
-  // 3. GENERACIÓN DEL MAPA CURVO
+  // 3. GENERACIÓN DEL MAPA CURVO (Zigzag pronunciado)
   function renderMap() {
     const cont = document.getElementById('pathContainer');
     cont.innerHTML = '';
@@ -69,8 +64,8 @@ const Game = (function() {
       if(i === curLevel) node.classList.add('active');
       node.innerText = i < curLevel ? '✔' : i;
       
-      // Curva ZigZag perfecta
-      let offset = Math.sin(i * 0.85) * 80; 
+      // Curva ZigZag mucho más pronunciada
+      let offset = Math.sin(i * 1.2) * 100; 
       node.style.transform = `translateX(${offset}px)`;
       
       if(i <= curLevel) node.onclick = () => startLevel(i);
@@ -83,7 +78,7 @@ const Game = (function() {
     score = 0; 
     moves = l === 1 ? 8 : Math.max(12, 20 - Math.floor(l/3));
     goal = l === 1 ? 200 : 400 + (l*150);
-    isLevelFinished = false; // RESUELVE EL BUG DE VICTORIA MÚLTIPLE
+    isLevelFinished = false;
     
     document.getElementById('mapView').classList.add('hidden');
     document.getElementById('stadiumView').classList.add('hidden');
@@ -95,7 +90,7 @@ const Game = (function() {
     document.getElementById('ui-moves').innerText = moves;
 
     let tut = document.getElementById('tutorialMsg');
-    if(l === 1) { tut.classList.remove('hidden'); tut.innerText = '👆 Arrastra para alinear 3 balones iguales'; }
+    if(l === 1) { tut.classList.remove('hidden'); tut.innerText = '👆 Arrastra para alinear 3 balones 3D'; }
     else { tut.classList.add('hidden'); }
 
     createBoard();
@@ -128,7 +123,8 @@ const Game = (function() {
           icon.style.backgroundSize = 'contain';
           icon.style.backgroundRepeat = 'no-repeat';
           icon.style.backgroundPosition = 'center';
-          icon.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.6))';
+          icon.style.filter = 'drop-shadow(0 6px 6px rgba(0,0,0,0.8))'; // Sombra fuerte 3D
+          icon.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.27), opacity 0.3s';
           icon.className = 'icon-item';
           cell.appendChild(icon);
         }
@@ -177,7 +173,6 @@ const Game = (function() {
 
   function findMatches() {
     let matched = new Set();
-    // Horizontales
     for(let r=0; r<ROWS; r++) {
       for(let c=0; c<COLS-2; c++) {
         let v = board[r][c];
@@ -186,7 +181,6 @@ const Game = (function() {
         }
       }
     }
-    // Verticales
     for(let c=0; c<COLS; c++) {
       for(let r=0; r<ROWS-2; r++) {
         let v = board[r][c];
@@ -242,7 +236,7 @@ const Game = (function() {
 
     // VERIFICAR VICTORIA/DERROTA
     if(score >= goal && !isLevelFinished) {
-      isLevelFinished = true; // EVITA EL BUCLE DEL VIDEO
+      isLevelFinished = true;
       setTimeout(() => {
         playSound('win');
         document.getElementById('modalWin').classList.remove('hidden');
@@ -253,12 +247,12 @@ const Game = (function() {
     }
   }
 
-  // 6. API PÚBLICA PARA EL HTML
+  // 6. API PÚBLICA
   return {
     init: function() {
       if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if(audioCtx.state === 'suspended') audioCtx.resume();
-      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('startScreen').classList.add('hidden');
       updateHUD(); renderMap();
     },
     switchTab: function(tab) {
