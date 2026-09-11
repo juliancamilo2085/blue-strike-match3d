@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Blue Strike: Football Match 3D</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <title>Blue Strike: Football Match</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; touch-action: none; user-select: none; }
+    * { box-sizing: border-box; touch-action: manipulation; user-select: none; }
     body {
       margin: 0; padding: 0; background: #000814;
       font-family: 'Fredoka One', cursive, sans-serif;
@@ -14,476 +14,382 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* CONTENEDOR PRINCIPAL ESTILO JUEGO MÓVIL */
     .app-container {
       width: 100%; max-width: 430px; height: 100vh;
-      background: radial-gradient(circle at 50% 10%, #0055ff 0%, #001a40 50%, #000612 100%);
+      background: radial-gradient(circle at 50% 0%, #0055ff 0%, #001a40 60%, #000612 100%);
       display: flex; flex-direction: column; overflow: hidden;
-      box-shadow: 0 0 50px rgba(0, 212, 255, 0.2);
     }
 
-    /* PANTALLA INICIAL DESBLOQUEO */
-    .audio-unlock-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 8, 20, 0.95); backdrop-filter: blur(10px);
-      z-index: 100; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; text-align: center;
-    }
-
-    /* BARRAS DE ESTADO HUD */
+    /* BARRA SUPERIOR */
     .top-navbar {
-      width: 100%; padding: 15px 20px; display: flex;
-      justify-content: space-between; align-items: center; z-index: 35;
-      background: rgba(0, 13, 32, 0.6); border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+      width: 100%; padding: 15px; display: flex; justify-content: space-between;
+      background: rgba(0, 13, 32, 0.8); border-bottom: 2px solid #00d4ff; z-index: 50;
     }
     .hud-pill {
-      background: linear-gradient(180deg, #ffffff, #e2e8f0); color: #0f172a;
-      border-radius: 20px; padding: 6px 14px; font-size: 15px; display: flex; align-items: center;
-      gap: 6px; font-family: 'Nunito', sans-serif; font-weight: 900;
-      border: 2px solid #00d4ff; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(180deg, #fff, #e2e8f0); color: #001a40;
+      border-radius: 20px; padding: 6px 12px; font-size: 14px; display: flex; align-items: center;
+      gap: 5px; font-family: 'Nunito', sans-serif; font-weight: 900;
+      border: 2px solid #00d4ff; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     }
 
-    .game-logo { font-size: 32px; text-align: center; line-height: 1; margin: 15px 0; }
-    .logo-top { color: #ffffff; text-shadow: 0 4px 0 #002255, 0 8px 15px rgba(0, 136, 255, 0.8); display: block; letter-spacing: 2px; }
-    .logo-bottom { color: #00d4ff; text-shadow: 0 4px 0 #004488, 0 8px 15px rgba(0, 212, 255, 0.8); display: block; font-size: 24px; letter-spacing: 3px; }
+    /* LOGO Y PORTADA */
+    .game-logo { text-align: center; margin: 15px 0; }
+    .logo-top { color: #fff; text-shadow: 0 4px 0 #002255; display: block; font-size: 32px; letter-spacing: 1px; }
+    .logo-bottom { color: #00d4ff; text-shadow: 0 4px 0 #004488; display: block; font-size: 22px; letter-spacing: 2px; }
 
-    /* AVATAR Y GRÁFICOS 3D HD */
-    .hero-avatar-box {
-      width: 180px; height: 180px; margin: 0 auto 10px;
-      display: flex; justify-content: center; align-items: center;
-      animation: floatAnim 3s infinite ease-in-out;
-    }
-    .hero-avatar-box img { width: 100%; height: 100%; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6)); }
+    /* MUÑECO HACIENDO DOMINADAS (ANIMACIÓN CSS PURA - NO SE ROMPE) */
+    .freestyle-container { position: relative; width: 140px; height: 160px; margin: 0 auto 20px; }
+    .fs-head { width: 46px; height: 46px; background: #ffdbac; border-radius: 50%; position: absolute; left: 47px; top: 0; z-index: 3; box-shadow: inset -5px -5px 0 rgba(0,0,0,0.1); }
+    .fs-hair { width: 50px; height: 25px; background: #00d4ff; border-radius: 25px 25px 0 0; position: absolute; left: 45px; top: -5px; z-index: 4; }
+    .fs-body { width: 56px; height: 60px; background: linear-gradient(180deg, #0088ff, #0044cc); border-radius: 12px; position: absolute; left: 42px; top: 40px; z-index: 2; border: 2px solid #fff; }
+    .fs-leg-left { width: 18px; height: 45px; background: #ffdbac; position: absolute; left: 48px; top: 95px; border-radius: 9px; z-index: 1; }
+    .fs-leg-right { width: 18px; height: 45px; background: #ffdbac; position: absolute; left: 74px; top: 95px; border-radius: 9px; z-index: 1; transform-origin: top center; animation: kick 0.5s infinite alternate ease-in; }
+    .fs-shoe { width: 24px; height: 14px; background: #fff; position: absolute; bottom: -4px; left: -3px; border-radius: 8px; }
+    .fs-ball { width: 34px; height: 34px; background: radial-gradient(circle, #fff 40%, #ccc); border: 2px solid #001a40; border-radius: 50%; position: absolute; left: 70px; top: 125px; z-index: 5; animation: bounce 0.5s infinite alternate ease-out; display: flex; justify-content: center; align-items: center; }
+    .fs-ball::after { content: ''; width: 14px; height: 14px; background: #001a40; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); display: block; }
+    
+    @keyframes kick { 0% { transform: rotate(0deg); } 100% { transform: rotate(-50deg); } }
+    @keyframes bounce { 0% { top: 130px; } 100% { top: 75px; transform: rotate(180deg); } }
 
-    @keyframes floatAnim {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-    }
-
-    /* MAPA DE NIVELES INFINITO */
-    .world-map-container {
-      flex: 1; width: 100%; padding: 20px; overflow-y: auto;
-      display: flex; flex-direction: column-reverse; align-items: center; gap: 20px;
-    }
+    /* CAMINO DEL MAPA TIPO CANDY CRUSH */
+    .world-map-container { flex: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column-reverse; align-items: center; scroll-behavior: smooth; }
+    .map-path { position: relative; width: 100%; display: flex; flex-direction: column-reverse; align-items: center; gap: 30px; padding: 20px 0; }
     .map-node {
-      width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(180deg, #0088ff, #0044cc);
-      border: 4px solid #ffffff; display: flex; justify-content: center;
-      align-items: center; font-size: 24px; font-weight: 900; color: #fff;
-      box-shadow: 0 8px 0 #002266, 0 15px 20px rgba(0,0,0,0.5);
-      cursor: pointer; transition: transform 0.2s; position: relative;
+      width: 64px; height: 64px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+      font-size: 24px; font-weight: 900; color: #fff; cursor: pointer; position: relative; z-index: 2;
+      background: linear-gradient(180deg, #0088ff, #003399); border: 4px solid #fff; box-shadow: 0 6px 0 #001a40, 0 10px 15px rgba(0,0,0,0.5);
     }
-    .map-node.completed { background: linear-gradient(180deg, #00e676, #008837); box-shadow: 0 8px 0 #004d1f, 0 15px 20px rgba(0,0,0,0.5); }
-    .map-node.active { transform: scale(1.15); border-color: #00d4ff; animation: pulseGlow 1.5s infinite alternate; }
+    .map-node.completed { background: linear-gradient(180deg, #00e676, #008837); box-shadow: 0 6px 0 #004d1f, 0 10px 15px rgba(0,0,0,0.5); }
+    .map-node.active { transform: scale(1.2); border-color: #00d4ff; animation: nodePulse 1s infinite alternate; }
+    @keyframes nodePulse { 0% { box-shadow: 0 0 10px #00d4ff, 0 6px 0 #001a40; } 100% { box-shadow: 0 0 30px #00d4ff, 0 6px 0 #001a40; } }
 
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 15px #00d4ff, 0 8px 0 #002266; }
-      100% { box-shadow: 0 0 35px #00d4ff, 0 8px 0 #002266; }
-    }
+    /* PANTALLA DE DESBLOQUEO INICIAL */
+    .overlay-start { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000814; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .btn-main { background: linear-gradient(180deg, #00d4ff, #0066ff); border: 3px solid #fff; border-radius: 25px; padding: 15px 30px; font-family: 'Fredoka One'; font-size: 20px; color: #fff; box-shadow: 0 8px 0 #003399; cursor: pointer; margin-top: 20px; }
+    .btn-main:active { transform: translateY(6px); box-shadow: 0 2px 0 #003399; }
 
-    /* BOTONES GLOBALES ESTILO CANDY CRUSH */
-    .btn-menu {
-      width: 90%; max-width: 320px; padding: 16px; border-radius: 25px; border: 3px solid #ffffff;
-      font-family: 'Fredoka One', cursive; font-size: 22px; color: #fff; margin: 10px auto 20px;
-      cursor: pointer; background: linear-gradient(180deg, #00d4ff, #0066ff);
-      box-shadow: 0 8px 0 #003399, 0 15px 25px rgba(0,0,0,0.5); text-align: center;
-      text-transform: uppercase;
-    }
-    .btn-menu:active { transform: translateY(6px); box-shadow: 0 2px 0 #003399; }
+    /* TABLERO MATCH-3 */
+    .game-screen { flex: 1; display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 10px; }
+    .hud-game { display: flex; justify-content: space-between; width: 100%; max-width: 380px; margin-bottom: 15px; }
+    .grid-container { background: radial-gradient(circle, #0f5132, #052e16); padding: 10px; border-radius: 20px; border: 4px solid #00d4ff; box-shadow: 0 15px 30px rgba(0,0,0,0.8); }
+    .grid-board { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    
+    .cell { width: 44px; height: 44px; background: rgba(255,255,255,0.1); border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: inset 0 3px 5px rgba(255,255,255,0.2); transition: transform 0.2s; }
+    .cell.selected { transform: scale(1.15); background: rgba(0, 212, 255, 0.4); border: 2px solid #fff; }
+    .cell svg { width: 36px; height: 36px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.6)); pointer-events: none; }
+    .cell.exploding { transform: scale(0); opacity: 0; transition: all 0.3s; }
 
-    /* TABLERO DE JUEGO (MATCH-3) */
-    .game-hud {
-      display: flex; justify-content: space-between; width: 100%; padding: 15px 20px;
-      background: rgba(0, 13, 32, 0.8); border-bottom: 2px solid #00d4ff;
-    }
-    .grid-board {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
-      background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 24px;
-      border: 4px solid #00d4ff; box-shadow: 0 20px 40px rgba(0,0,0,0.8); margin: auto;
-    }
-    .cell {
-      width: 46px; height: 46px; background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px; display: flex; justify-content: center; align-items: center;
-      cursor: pointer; transition: transform 0.2s; position: relative;
-      box-shadow: inset 0 4px 6px rgba(255,255,255,0.2);
-    }
-    .cell.selected { transform: scale(1.2); background: rgba(0, 212, 255, 0.4); border: 2px solid #fff; z-index: 10; }
-    .cell img { width: 40px; height: 40px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6)); pointer-events: none; }
-    .cell.exploding img { transform: scale(0); opacity: 0; transition: all 0.3s; }
+    /* MODAL VICTORIA */
+    .modal { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,13,32,0.9); display:none; justify-content:center; align-items:center; z-index:90; }
+    .modal-content { background:#fff; padding:30px; border-radius:30px; border:4px solid #00d4ff; text-align:center; color:#001a40; width:85%; max-width:350px; }
 
-    /* MANO TUTORIAL ANIMADA */
-    .tutorial-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6); z-index: 80; pointer-events: none;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-    }
-    .tutorial-msg {
-      background: #fff; color: #001a40; padding: 15px 25px; border-radius: 20px;
-      font-family: 'Nunito'; font-weight: 900; font-size: 18px; text-align: center;
-      border: 4px solid #00d4ff; box-shadow: 0 10px 25px rgba(0,0,0,0.8); margin-bottom: 30px;
-    }
-    .tutorial-hand { font-size: 50px; animation: handSwipe 1.5s infinite ease-in-out; }
-    @keyframes handSwipe { 0% { transform: translate(0, 0); } 50% { transform: translate(60px, 0); } 100% { transform: translate(0, 0); } }
-
-    /* POPUP GOLAZO */
-    .goal-popup {
-      position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0);
-      font-size: 50px; color: #00f0ff; text-shadow: 0 0 20px #00f0ff, 0 8px 0 #003380;
-      z-index: 100; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.27); pointer-events: none;
-    }
-    .goal-popup.active { transform: translate(-50%, -50%) scale(1.2); }
-
-    /* SECCIÓN MI ESTADIO */
-    .stadium-view { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-    .stadium-card {
-      background: linear-gradient(135deg, #0f172a, #1e293b); border: 2px solid #00d4ff;
-      border-radius: 20px; padding: 20px; display: flex; justify-content: space-between;
-      align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    }
-    .stadium-info h4 { margin: 0 0 5px; font-size: 18px; color: #fff; }
-    .stadium-info p { margin: 0; font-size: 13px; color: #94a3b8; font-family: 'Nunito'; font-weight: 800; }
-    .btn-upgrade { background: #00e676; border: 2px solid #fff; color: #004d1f; border-radius: 15px; padding: 10px 15px; font-family: 'Fredoka One'; font-size: 16px; box-shadow: 0 6px 0 #008837; cursor: pointer; }
-
-    /* NAVEGACIÓN INFERIOR */
-    .bottom-nav {
-      display: flex; justify-content: space-around; background: #000814;
-      padding: 15px 0 25px; border-top: 3px solid #00d4ff; z-index: 50;
-    }
-    .nav-tab { display: flex; flex-direction: column; align-items: center; font-family: 'Nunito'; font-weight: 900; color: #64748b; font-size: 12px; cursor: pointer; }
-    .nav-tab.active { color: #00d4ff; }
-    .nav-icon { font-size: 26px; margin-bottom: 4px; filter: grayscale(100%); }
-    .nav-tab.active .nav-icon { filter: grayscale(0%); drop-shadow: 0 0 10px #00d4ff; }
-
-    .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 8, 20, 0.9); display: flex; justify-content: center; align-items: center; z-index: 100; }
-    .modal-card { background: #fff; padding: 30px; border-radius: 30px; text-align: center; border: 4px solid #00d4ff; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-width: 90%; color: #001a40; }
+    .tutorial-msg { background: #fff; color: #001a40; padding: 15px; border-radius: 15px; font-family: 'Nunito'; font-weight: 900; margin-bottom: 15px; text-align: center; border: 3px solid #00d4ff; display: none; }
+    .goal-popup { position: absolute; top: 30%; font-size: 45px; color: #00f0ff; text-shadow: 0 6px 0 #003399; opacity: 0; pointer-events: none; transition: all 0.5s; z-index: 80; }
+    .goal-popup.active { opacity: 1; transform: translateY(-50px) scale(1.2); }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- PANTALLA DE DESBLOQUEO -->
-    <div class="audio-unlock-overlay" id="audioOverlay">
+    
+    <!-- PANTALLA INICIAL (OBLIGATORIA PARA ACTIVAR AUDIO EN CELULARES) -->
+    <div class="overlay-start" id="startScreen">
       <div class="game-logo">
         <span class="logo-top">BLUE STRIKE</span>
         <span class="logo-bottom">MATCH 3D SAGA</span>
       </div>
-      <div class="hero-avatar-box">
-        <img src="https://img.icons8.com/3d-fluency/250/soccer-ball.png" alt="Balón 3D">
-      </div>
-      <button class="btn-menu" onclick="unlockAudioAndStart()">ENTRAR AL ESTADIO</button>
+      <button class="btn-main" onclick="initGame()">ENTRAR AL ESTADIO</button>
+      <p style="font-family:'Nunito'; font-size:12px; margin-top:20px; color:#94a3b8;">Sube el volumen multimedia de tu celular</p>
     </div>
 
-    <div class="goal-popup" id="goalPopup">¡GOLAZO!</div>
-
-    <!-- HUD SUPERIOR -->
+    <!-- NAVEGACIÓN SUPERIOR -->
     <div class="top-navbar">
-      <div class="hud-pill">❤️ <span id="livesCount">5</span></div>
-      <div class="hud-pill">🪙 <span id="coinsCount">150</span></div>
-      <div class="hud-pill">⭐ <span id="totalStars">0</span></div>
+      <div class="hud-pill">❤️ <span id="valLives">5</span></div>
+      <div class="hud-pill">🪙 <span id="valCoins">150</span></div>
+      <div class="hud-pill">⭐ <span id="valStars">0</span></div>
     </div>
 
-    <!-- PESTAÑA: MAPA DEL TORNEO -->
-    <div id="mapScreen" style="flex:1; display:flex; flex-direction:column; align-items:center; overflow:hidden;">
-      <div class="game-logo"><span class="logo-top">COPA MUNDIAL</span></div>
-      <div class="world-map-container" id="nodesContainer"></div>
-      <button class="btn-menu" id="startBtn">JUGAR PARTIDO</button>
-    </div>
+    <!-- PANTALLA DEL MAPA (CON AVATAR Y CAMINO ZIGZAG) -->
+    <div id="mapView" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="text-align:center; margin-top:10px;">
+        <!-- AVATAR DOMINADAS 100% CÓDIGO (NO IMÁGENES ROTAS) -->
+        <div class="freestyle-container">
+          <div class="fs-hair"></div>
+          <div class="fs-head"></div>
+          <div class="fs-body"></div>
+          <div class="fs-leg-left"><div class="fs-shoe"></div></div>
+          <div class="fs-leg-right"><div class="fs-shoe"></div></div>
+          <div class="fs-ball"></div>
+        </div>
+        <h2 style="margin:0; color:#00d4ff; font-size:24px;">TORNEO MUNDIAL</h2>
+      </div>
 
-    <!-- PESTAÑA: MI ESTADIO -->
-    <div id="stadiumScreen" class="stadium-view" style="display: none;">
-      <h2 style="color:#00d4ff; margin:0 0 20px; font-size: 28px;">🏟️ MI ESTADIO</h2>
-      <div class="stadium-card">
-        <div class="stadium-info"><h4>Luces LED Neón</h4><p>Nivel 1 • Más monedas</p></div>
-        <button class="btn-upgrade" onclick="upgradeFacility('led', 100)">100 🪙</button>
-      </div>
-      <div class="stadium-card">
-        <div class="stadium-info"><h4>Grama Híbrida Pro</h4><p>Desbloquea eventos</p></div>
-        <button class="btn-upgrade" onclick="upgradeFacility('pitch', 300)">300 🪙</button>
-      </div>
-      <div class="stadium-card">
-        <div class="stadium-info"><h4>Tribunas VIP</h4><p>+2 Vidas Máximas</p></div>
-        <button class="btn-upgrade" onclick="upgradeFacility('stands', 500)">500 🪙</button>
+      <div class="world-map-container">
+        <div class="map-path" id="pathContainer"></div>
       </div>
     </div>
 
-    <!-- PESTAÑA: TABLERO DE JUEGO MATCH 3 -->
-    <div id="gameBoard" style="flex:1; display:none; flex-direction:column; justify-content:center;">
-      <div class="game-hud">
-        <div class="hud-pill">🏆 NIVEL <span id="lvlText">1</span></div>
-        <div class="hud-pill">🎯 <span id="scoreText">0</span>/<span id="goalText">500</span></div>
-        <div class="hud-pill" style="color:#0088ff;">🔄 <span id="movesText">15</span></div>
+    <!-- PANTALLA DEL TABLERO DE JUEGO -->
+    <div id="gameView" class="game-screen">
+      <div class="tutorial-msg" id="tutMsg"></div>
+      <div class="hud-game">
+        <div class="hud-pill">🏆 <span id="inLvl">1</span></div>
+        <div class="hud-pill">🎯 <span id="inScore">0</span>/<span id="inGoal">500</span></div>
+        <div class="hud-pill" style="color:#0088ff;">🔄 <span id="inMoves">15</span></div>
       </div>
-      <div class="grid-board" id="grid"></div>
+      <div class="grid-container">
+        <div class="grid-board" id="grid"></div>
+      </div>
+      <button class="btn-main" style="padding:10px 20px; font-size:16px; margin-top:20px;" onclick="exitToMap()">RENDIRSE</button>
     </div>
 
-    <!-- TUTORIAL GUIADO -->
-    <div class="tutorial-overlay" id="tutorialOverlay" style="display: none;">
-      <div class="tutorial-msg" id="tutText">¡Arrastra la ficha para alinear 3 balones!</div>
-      <div class="tutorial-hand">👆</div>
-    </div>
+    <!-- MENSAJE GOLAZO Y VICTORIA -->
+    <div class="goal-popup" id="msgGoal">¡GOLAZO!</div>
 
-    <!-- MODAL VICTORIA -->
-    <div class="modal" id="winModal" style="display: none;">
-      <div class="modal-card">
-        <h2 style="color: #0088ff; font-size: 32px;">🎉 ¡VICTORIA!</h2>
-        <p style="font-size: 18px;">Has completado el nivel.<br><br><strong>Recompensa: +50 🪙</strong></p>
-        <button class="btn-menu" style="width: 100%;" onclick="finishLevel(true)">CONTINUAR</button>
+    <div class="modal" id="modalWin">
+      <div class="modal-content">
+        <h2 style="color:#0088ff; font-size:32px; margin-top:0;">¡VICTORIA!</h2>
+        <p style="font-family:'Nunito'; font-weight:800; font-size:16px;">Nivel Superado<br><br><span style="font-size:24px; color:#facc15;">+50 🪙</span></p>
+        <button class="btn-main" onclick="claimVictory()">CONTINUAR</button>
       </div>
     </div>
 
-    <!-- NAVEGACIÓN INFERIOR -->
-    <div class="bottom-nav">
-      <div class="nav-tab active" id="tabTorneo" onclick="switchTab('torneo')">
-        <span class="nav-icon">🏆</span><span>TORNEO</span>
-      </div>
-      <div class="nav-tab" id="tabEstadio" onclick="switchTab('estadio')">
-        <span class="nav-icon">🏟️</span><span>MI ESTADIO</span>
-      </div>
-    </div>
   </div>
 
   <script>
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    let audioCtx = null;
+    // VECTORES INLINE: No requieren internet, no sufren bloqueos CORS, siempre cargan HD.
+    const SVG_BALL = `<svg viewBox="0 0 100 100"><defs><radialGradient id="gBall" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#94a3b8"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#gBall)" stroke="#001a40" stroke-width="4"/><polygon points="50,15 70,30 62,55 38,55 30,30" fill="#001a40"/><path d="M50,15 L50,0 M70,30 L90,20 M62,55 L85,75 M38,55 L15,75 M30,30 L10,20" stroke="#001a40" stroke-width="4"/></svg>`;
+    const SVG_TROPHY = `<svg viewBox="0 0 100 100"><defs><radialGradient id="gTrophy" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#eab308"/><stop offset="100%" stop-color="#854d0e"/></radialGradient></defs><path d="M20,20 L80,20 L70,55 C70,75 30,75 30,55 Z" fill="url(#gTrophy)" stroke="#fff" stroke-width="4"/><rect x="40" y="70" width="20" height="20" fill="#eab308" stroke="#fff" stroke-width="3"/><path d="M20,20 C5,20 5,45 25,40 M80,20 C95,20 95,45 75,40" fill="none" stroke="url(#gTrophy)" stroke-width="8" stroke-linecap="round"/></svg>`;
+    const SVG_SHIELD = `<svg viewBox="0 0 100 100"><defs><radialGradient id="gShield" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#60a5fa"/><stop offset="60%" stop-color="#2563eb"/><stop offset="100%" stop-color="#1e3a8a"/></radialGradient></defs><path d="M50,5 L90,20 L90,55 C90,85 50,95 50,95 C50,95 10,85 10,55 L10,20 Z" fill="url(#gShield)" stroke="#fff" stroke-width="4"/><polygon points="50,25 65,45 40,45" fill="#fff"/></svg>`;
+    const SVG_CLEAT = `<svg viewBox="0 0 100 100"><defs><radialGradient id="gCleat" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#34d399"/><stop offset="70%" stop-color="#059669"/><stop offset="100%" stop-color="#064e3b"/></radialGradient></defs><path d="M10,40 C30,20 60,30 80,45 C95,55 90,75 75,75 L15,75 C5,75 0,50 10,40 Z" fill="url(#gCleat)" stroke="#fff" stroke-width="4"/><circle cx="25" cy="80" r="4" fill="#fff"/><circle cx="50" cy="80" r="4" fill="#fff"/><circle cx="75" cy="80" r="4" fill="#fff"/></svg>`;
+    const SVG_CARD = `<svg viewBox="0 0 100 100"><defs><radialGradient id="gCard" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fca5a5"/><stop offset="60%" stop-color="#dc2626"/><stop offset="100%" stop-color="#7f1d1d"/></radialGradient></defs><rect x="25" y="15" width="50" height="70" rx="6" fill="url(#gCard)" stroke="#fff" stroke-width="4"/><circle cx="50" cy="50" r="10" fill="#fff"/></svg>`;
 
-    // Íconos 3D de altísima calidad desde CDN confiable
-    const ITEMS_3D = [
-      `<img src="https://img.icons8.com/3d-fluency/250/soccer-ball.png">`,
-      `<img src="https://img.icons8.com/3d-fluency/250/trophy.png">`,
-      `<img src="https://img.icons8.com/3d-fluency/250/sneakers.png">`,
-      `<img src="https://img.icons8.com/3d-fluency/250/security-shield-green.png">`,
-      `<img src="https://img.icons8.com/3d-fluency/250/whistle.png">`
-    ];
-
+    const ITEMS = [SVG_BALL, SVG_TROPHY, SVG_SHIELD, SVG_CLEAT, SVG_CARD];
     const ROWS = 7, COLS = 7;
-    let board = [];
-    let selectedCell = null;
-    let isProcessing = false;
-
-    let currentUnlockedLevel = parseInt(localStorage.getItem('bs_lvl')) || 1;
-    let activeLevel = currentUnlockedLevel;
+    let board = [], selected = null, processing = false;
+    
+    // Variables de progreso
+    let curLevel = parseInt(localStorage.getItem('bs_lvl')) || 1;
     let coins = parseInt(localStorage.getItem('bs_coins')) || 150;
     let stars = parseInt(localStorage.getItem('bs_stars')) || 0;
-    let score = 0, goalScore = 500, moves = 15;
+    let score = 0, goal = 500, moves = 15;
 
-    function unlockAudioAndStart() {
-      if (!audioCtx) audioCtx = new AudioCtx();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      document.getElementById('audioOverlay').style.display = 'none';
-      renderMapNodes();
+    // AUDIO ROBUSTO
+    let actx = null;
+    function initGame() {
+      if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if(actx.state === 'suspended') actx.resume();
+      document.getElementById('startScreen').style.display = 'none';
+      updateUI();
+      buildMap();
     }
 
-    function switchTab(tab) {
-      if (tab === 'torneo') {
-        document.getElementById('mapScreen').style.display = 'flex';
-        document.getElementById('stadiumScreen').style.display = 'none';
-        document.getElementById('tabTorneo').classList.add('active');
-        document.getElementById('tabEstadio').classList.remove('active');
-      } else {
-        document.getElementById('mapScreen').style.display = 'none';
-        document.getElementById('stadiumScreen').style.display = 'flex';
-        document.getElementById('tabTorneo').classList.remove('active');
-        document.getElementById('tabEstadio').classList.add('active');
+    function playSound(type) {
+      if(!actx || actx.state !== 'running') return;
+      let osc = actx.createOscillator(), gain = actx.createGain();
+      osc.connect(gain); gain.connect(actx.destination);
+      if(type === 'pop') {
+        osc.type = 'sine'; osc.frequency.setValueAtTime(400, actx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, actx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.5, actx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.1);
+        osc.start(); osc.stop(actx.currentTime + 0.1);
+      } else if (type === 'whistle') {
+        osc.type = 'square'; osc.frequency.setValueAtTime(1200, actx.currentTime);
+        osc.frequency.setValueAtTime(1400, actx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, actx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.4);
+        osc.start(); osc.stop(actx.currentTime + 0.4);
       }
     }
 
-    function renderMapNodes() {
-      const container = document.getElementById('nodesContainer');
-      container.innerHTML = '';
-      document.getElementById('coinsCount').innerText = coins;
-      document.getElementById('totalStars').innerText = stars;
+    function doVibrate() { if(navigator.vibrate) navigator.vibrate(40); }
 
-      for (let i = 1; i <= Math.max(30, currentUnlockedLevel + 5); i++) {
-        const node = document.createElement('div');
+    function updateUI() {
+      document.getElementById('valCoins').innerText = coins;
+      document.getElementById('valStars').innerText = stars;
+    }
+
+    // CONSTRUIR MAPA EN ZIGZAG
+    function buildMap() {
+      const cont = document.getElementById('pathContainer');
+      cont.innerHTML = '';
+      for(let i=1; i<=Math.max(20, curLevel + 5); i++) {
+        let node = document.createElement('div');
         node.className = 'map-node';
-        if (i < currentUnlockedLevel) node.classList.add('completed');
-        else if (i === currentUnlockedLevel) node.classList.add('active');
+        if(i < curLevel) node.classList.add('completed');
+        if(i === curLevel) node.classList.add('active');
+        node.innerText = i < curLevel ? '✔' : i;
         
-        node.innerText = i < currentUnlockedLevel ? '✔' : i;
-        if (i <= currentUnlockedLevel) node.onclick = () => startLevel(i);
-        container.appendChild(node);
+        // Efecto ZigZag matemático
+        let offset = Math.sin(i * 0.8) * 60;
+        node.style.transform = `translateX(${offset}px) ${i===curLevel?'scale(1.2)':''}`;
+        
+        if(i <= curLevel) node.onclick = () => loadLevel(i);
+        cont.appendChild(node);
       }
     }
 
-    document.getElementById('startBtn').addEventListener('click', () => startLevel(currentUnlockedLevel));
+    function loadLevel(l) {
+      score = 0; moves = l===1 ? 8 : Math.max(12, 20 - Math.floor(l/3));
+      goal = l===1 ? 200 : 400 + (l*150);
+      
+      document.getElementById('mapView').style.display = 'none';
+      document.getElementById('gameView').style.display = 'flex';
+      document.getElementById('inLvl').innerText = l;
+      document.getElementById('inScore').innerText = score;
+      document.getElementById('inGoal').innerText = goal;
+      document.getElementById('inMoves').innerText = moves;
 
-    function startLevel(lvl) {
-      activeLevel = lvl;
-      score = 0; 
-      moves = lvl === 1 ? 5 : Math.max(12, 20 - Math.floor(lvl / 3));
-      goalScore = lvl === 1 ? 100 : 400 + (lvl * 150);
-
-      document.getElementById('mapScreen').style.display = 'none';
-      document.getElementById('stadiumScreen').style.display = 'none';
-      document.getElementById('gameBoard').style.display = 'flex';
-
-      document.getElementById('lvlText').innerText = activeLevel;
-      document.getElementById('goalText').innerText = goalScore;
-      document.getElementById('movesText').innerText = moves;
+      let tut = document.getElementById('tutMsg');
+      if(l===1) { tut.style.display = 'block'; tut.innerText = '¡Arrastra para alinear 3 fichas iguales!'; }
+      else { tut.style.display = 'none'; }
 
       initBoard();
-
-      if (lvl === 1) {
-        document.getElementById('tutorialOverlay').style.display = 'flex';
-        document.getElementById('tutText').innerText = 'NIVEL 1: ¡Arrastra para alinear 3 balones iguales!';
-      } else {
-        document.getElementById('tutorialOverlay').style.display = 'none';
-      }
     }
 
     function initBoard() {
       do {
         board = [];
-        for (let r = 0; r < ROWS; r++) {
+        for(let r=0; r<ROWS; r++) {
           board[r] = [];
-          for (let c = 0; c < COLS; c++) {
-            board[r][c] = Math.floor(Math.random() * ITEMS_3D.length);
-          }
+          for(let c=0; c<COLS; c++) board[r][c] = Math.floor(Math.random()*ITEMS.length);
         }
-      } while (findMatches().length > 0);
-      renderBoard();
+      } while(checkMatches().length > 0);
+      drawBoard();
     }
 
-    function renderBoard() {
-      const grid = document.getElementById('grid');
+    function drawBoard() {
+      let grid = document.getElementById('grid');
       grid.innerHTML = '';
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          const cell = document.createElement('div');
+      for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+          let cell = document.createElement('div');
           cell.className = 'cell';
-          cell.dataset.r = r; cell.dataset.c = c;
-          if (selectedCell && selectedCell.r === r && selectedCell.c === c) cell.classList.add('selected');
-          if (board[r][c] !== null) cell.innerHTML = ITEMS_3D[board[r][c]];
-          cell.onclick = () => onCellClick(r, c);
+          if(selected && selected.r === r && selected.c === c) cell.classList.add('selected');
+          if(board[r][c] !== null) cell.innerHTML = ITEMS[board[r][c]];
+          cell.onclick = () => tapCell(r, c);
           grid.appendChild(cell);
         }
       }
     }
 
-    async function onCellClick(r, c) {
-      if (isProcessing) return;
-      document.getElementById('tutorialOverlay').style.display = 'none';
+    async function tapCell(r, c) {
+      if(processing) return;
+      document.getElementById('tutMsg').style.display = 'none';
 
-      if (!selectedCell) {
-        selectedCell = { r, c }; renderBoard();
+      if(!selected) {
+        selected = {r,c}; drawBoard();
       } else {
-        const isAdjacent = Math.abs(selectedCell.r - r) + Math.abs(selectedCell.c - c) === 1;
-        if (isAdjacent) {
-          isProcessing = true;
-          swap(selectedCell.r, selectedCell.c, r, c);
-          renderBoard();
+        let isAdj = Math.abs(selected.r - r) + Math.abs(selected.c - c) === 1;
+        if(isAdj) {
+          processing = true;
+          let temp = board[selected.r][selected.c];
+          board[selected.r][selected.c] = board[r][c];
+          board[r][c] = temp;
+          drawBoard();
 
-          let matches = findMatches();
-          if (matches.length > 0) {
-            moves--;
-            document.getElementById('movesText').innerText = moves;
-            await processMatches();
+          let m = checkMatches();
+          if(m.length > 0) {
+            moves--; document.getElementById('inMoves').innerText = moves;
+            await resolveMatches();
           } else {
-            swap(selectedCell.r, selectedCell.c, r, c);
-            renderBoard();
+            // Revertir
+            temp = board[selected.r][selected.c];
+            board[selected.r][selected.c] = board[r][c];
+            board[r][c] = temp;
+            drawBoard();
           }
-          selectedCell = null; isProcessing = false;
+          selected = null; processing = false;
         } else {
-          selectedCell = { r, c }; renderBoard();
+          selected = {r,c}; drawBoard();
         }
       }
     }
 
-    function swap(r1, c1, r2, c2) {
-      let t = board[r1][c1]; board[r1][c1] = board[r2][c2]; board[r2][c2] = t;
-    }
-
-    function findMatches() {
+    function checkMatches() {
       let matched = new Set();
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS - 2; c++) {
+      for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS-2; c++) {
           let v = board[r][c];
-          if (v !== null && v === board[r][c+1] && v === board[r][c+2]) {
+          if(v!==null && v===board[r][c+1] && v===board[r][c+2]) {
             matched.add(`${r},${c}`); matched.add(`${r},${c+1}`); matched.add(`${r},${c+2}`);
           }
         }
       }
-      for (let c = 0; c < COLS; c++) {
-        for (let r = 0; r < ROWS - 2; r++) {
+      for(let c=0; c<COLS; c++) {
+        for(let r=0; r<ROWS-2; r++) {
           let v = board[r][c];
-          if (v !== null && v === board[r+1][c] && v === board[r+2][c]) {
+          if(v!==null && v===board[r+1][c] && v===board[r+2][c]) {
             matched.add(`${r},${c}`); matched.add(`${r+1},${c}`); matched.add(`${r+2},${c}`);
           }
         }
       }
-      return Array.from(matched).map(coord => {
-        let [r, c] = coord.split(',').map(Number);
-        return { r, c };
-      });
+      return Array.from(matched).map(s => { let [r,c] = s.split(',').map(Number); return {r,c}; });
     }
 
-    async function processMatches() {
-      let matches = findMatches();
-      while (matches.length > 0) {
-        score += matches.length * 30;
-        document.getElementById('scoreText').innerText = score;
+    async function resolveMatches() {
+      let m = checkMatches();
+      while(m.length > 0) {
+        playSound('pop'); doVibrate();
+        score += m.length * 30;
+        document.getElementById('inScore').innerText = score;
 
-        if (matches.length >= 4) {
-          const pop = document.getElementById('goalPopup');
-          pop.classList.add('active');
-          setTimeout(() => pop.classList.remove('active'), 600);
-          if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+        if(m.length >= 4) {
+          let p = document.getElementById('msgGoal');
+          p.classList.add('active');
+          playSound('whistle');
+          setTimeout(()=> p.classList.remove('active'), 800);
         }
 
-        matches.forEach(({ r, c }) => {
+        m.forEach(({r,c}) => {
           board[r][c] = null;
-          const cell = document.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+          let cell = document.getElementById('grid').children[r*COLS + c];
           if(cell) cell.classList.add('exploding');
         });
-        
-        await new Promise(res => setTimeout(res, 300));
 
-        for (let c = 0; c < COLS; c++) {
-          let emptyRow = ROWS - 1;
-          for (let r = ROWS - 1; r >= 0; r--) {
-            if (board[r][c] !== null) {
-              board[emptyRow][c] = board[r][c];
-              if (emptyRow !== r) board[r][c] = null;
-              emptyRow--;
+        await new Promise(r => setTimeout(r, 300));
+
+        // Caída por gravedad
+        for(let c=0; c<COLS; c++) {
+          let er = ROWS-1;
+          for(let r=ROWS-1; r>=0; r--) {
+            if(board[r][c] !== null) {
+              board[er][c] = board[r][c];
+              if(er !== r) board[r][c] = null;
+              er--;
             }
           }
-          for (let r = emptyRow; r >= 0; r--) {
-            board[r][c] = Math.floor(Math.random() * ITEMS_3D.length);
-          }
+          for(let r=er; r>=0; r--) board[r][c] = Math.floor(Math.random()*ITEMS.length);
         }
-        renderBoard();
-        await new Promise(res => setTimeout(res, 250));
-        matches = findMatches();
+        drawBoard();
+        await new Promise(r => setTimeout(r, 300));
+        m = checkMatches();
       }
 
-      if (score >= goalScore) {
-        setTimeout(() => document.getElementById('winModal').style.display = 'flex', 500);
+      if(score >= goal) {
+        setTimeout(()=> document.getElementById('modalWin').style.display = 'flex', 500);
+        playSound('whistle');
+      } else if (moves <= 0) {
+        alert("¡Sin movimientos! Intenta de nuevo.");
+        exitToMap();
       }
     }
 
-    function finishLevel(win) {
-      document.getElementById('winModal').style.display = 'none';
-      document.getElementById('gameBoard').style.display = 'none';
-      document.getElementById('mapScreen').style.display = 'flex';
-
-      if (win) {
-        coins += 50; stars += 3;
-        if (activeLevel === currentUnlockedLevel) currentUnlockedLevel++;
-        localStorage.setItem('bs_lvl', currentUnlockedLevel);
-        localStorage.setItem('bs_coins', coins);
-        localStorage.setItem('bs_stars', stars);
-      }
-      renderMapNodes();
+    function claimVictory() {
+      document.getElementById('modalWin').style.display = 'none';
+      coins += 50; stars += 3;
+      if(activeLevel === curLevel) curLevel++;
+      localStorage.setItem('bs_lvl', curLevel);
+      localStorage.setItem('bs_coins', coins);
+      localStorage.setItem('bs_stars', stars);
+      exitToMap();
     }
 
-    function upgradeFacility(type, cost) {
-      if (coins >= cost) {
-        coins -= cost;
-        localStorage.setItem('bs_coins', coins);
-        renderMapNodes();
-        alert("¡Construcción completada!");
-      } else {
-        alert("Necesitas más monedas. ¡Juega más partidos!");
-      }
+    function exitToMap() {
+      document.getElementById('gameView').style.display = 'none';
+      document.getElementById('mapView').style.display = 'flex';
+      updateUI(); buildMap();
     }
   </script>
 </body>
