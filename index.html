@@ -1,105 +1,275 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-  <title>Blue Strike: Football Match 3D Saga</title>
+  <title>Blue Strike: Football Match 3D</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
-  <!-- Aquí conectamos el diseño y los gráficos (Siguiente archivo) -->
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * { box-sizing: border-box; touch-action: manipulation; user-select: none; }
+    body { margin: 0; background: #000814; font-family: 'Fredoka One', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; color: #fff; }
+    .app-container { width: 100%; max-width: 430px; height: 100vh; background: radial-gradient(circle at 50% 0%, #0044aa 0%, #001a40 60%, #000612 100%); display: flex; flex-direction: column; position: relative; }
+    .hidden { display: none !important; }
+
+    /* NAVEGACIÓN Y HUD */
+    .top-navbar { padding: 15px; display: flex; justify-content: space-between; background: rgba(0, 13, 32, 0.9); border-bottom: 3px solid #00d4ff; z-index: 50; }
+    .hud-pill { background: linear-gradient(180deg, #fff, #e2e8f0); color: #001a40; border-radius: 20px; padding: 6px 14px; font-size: 15px; display: flex; align-items: center; gap: 5px; font-family: 'Nunito'; font-weight: 900; border: 2px solid #00d4ff; }
+    
+    /* PANTALLA INICIAL Y AVATAR */
+    .overlay-start { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,8,20,0.95); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .logo-box { text-align: center; margin-bottom: 20px; }
+    .logo-top { color: #fff; font-size: 36px; text-shadow: 0 4px 0 #002255; display: block; }
+    .logo-bottom { color: #00d4ff; font-size: 24px; text-shadow: 0 4px 0 #004488; letter-spacing: 2px; }
+    
+    /* EL MUÑECO HACIENDO DOMINADAS (Animación CSS) */
+    .avatar-container { position: relative; width: 150px; height: 180px; margin-bottom: 30px; }
+    .player-head { width: 45px; height: 45px; background: #ffdbac; border-radius: 50%; position: absolute; left: 52px; top: 10px; border: 2px solid #001a40; z-index: 3; }
+    .player-hair { width: 50px; height: 20px; background: #00d4ff; border-radius: 25px 25px 0 0; position: absolute; left: 50px; top: 5px; z-index: 4; }
+    .player-body { width: 60px; height: 65px; background: linear-gradient(180deg, #fff, #cbd5e1); border-radius: 10px; position: absolute; left: 45px; top: 55px; border: 3px solid #0044aa; z-index: 2; }
+    .player-leg-l { width: 18px; height: 50px; background: #ffdbac; position: absolute; left: 50px; top: 115px; border-radius: 10px; border: 2px solid #001a40; }
+    .player-leg-r { width: 18px; height: 50px; background: #ffdbac; position: absolute; left: 82px; top: 115px; border-radius: 10px; border: 2px solid #001a40; transform-origin: top center; animation: kick 0.4s infinite alternate ease-in; }
+    .player-shoe { width: 25px; height: 15px; background: #00d4ff; position: absolute; bottom: -2px; left: -3px; border-radius: 10px; border: 2px solid #001a40; }
+    .player-ball { width: 35px; height: 35px; background: #fff; border-radius: 50%; position: absolute; left: 80px; top: 140px; border: 3px solid #001a40; z-index: 5; animation: bounce 0.4s infinite alternate ease-out; display: flex; justify-content: center; align-items: center; }
+    .player-ball::after { content: ''; width: 15px; height: 15px; background: #001a40; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+
+    @keyframes kick { 0% { transform: rotate(0deg); } 100% { transform: rotate(-45deg); } }
+    @keyframes bounce { 0% { top: 145px; } 100% { top: 85px; transform: rotate(180deg); } }
+
+    /* BOTONES */
+    .btn-main { background: linear-gradient(180deg, #00d4ff, #0066ff); border: 3px solid #fff; border-radius: 30px; padding: 15px 35px; font-family: 'Fredoka One'; font-size: 20px; color: #fff; box-shadow: 0 8px 0 #003399; cursor: pointer; transition: transform 0.1s; }
+    .btn-main:active { transform: translateY(6px); box-shadow: 0 2px 0 #003399; }
+
+    /* MAPA ZIGZAG */
+    .map-screen { flex: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; align-items: center; padding: 40px 0; }
+    .map-node { width: 70px; height: 70px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; color: #fff; background: #0044cc; border: 4px solid #fff; box-shadow: 0 8px 0 #001a40; margin-bottom: 35px; position: relative; }
+    .map-node.completed { background: #00e676; box-shadow: 0 8px 0 #004d1f; }
+    .map-node.active { transform: scale(1.2); border-color: #00d4ff; animation: pulse 1s infinite alternate; }
+    @keyframes pulse { 0% { box-shadow: 0 0 10px #00d4ff, 0 8px 0 #001a40; } 100% { box-shadow: 0 0 30px #00d4ff, 0 8px 0 #001a40; } }
+
+    /* TABLERO JUEGO MATCH 3 */
+    .game-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 15px; }
+    .grid-container { background: rgba(0, 13, 32, 0.8); padding: 12px; border-radius: 20px; border: 4px solid #00d4ff; box-shadow: 0 15px 30px rgba(0,0,0,0.8); }
+    .grid-board { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .cell { width: 45px; height: 45px; background: rgba(255,255,255,0.08); border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s; position: relative; }
+    .cell.selected { transform: scale(1.15); background: rgba(0, 212, 255, 0.4); border: 2px solid #fff; z-index: 10; }
+    
+    /* IMÁGENES 3D REALES */
+    .cell img { width: 40px; height: 40px; filter: drop-shadow(0 5px 6px rgba(0,0,0,0.7)); pointer-events: none; transition: transform 0.2s; }
+    .cell.exploding img { transform: scale(0); opacity: 0; }
+
+    /* MODALES Y POPUPS */
+    .modal { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,8,20,0.9); display:flex; justify-content:center; align-items:center; z-index:90; }
+    .modal-content { background:#fff; padding:30px; border-radius:25px; border:5px solid #00d4ff; text-align:center; color:#001a40; width:85%; max-width:350px; }
+  </style>
 </head>
 <body>
 
   <div class="app-container">
     
-    <!-- 1. PANTALLA INICIAL (Desbloqueo de Audio y Carga) -->
-    <div id="startScreen" class="overlay-start">
-      <div class="game-logo">
+    <!-- PANTALLA INICIAL (Desbloquea audio y muestra el avatar) -->
+    <div class="overlay-start" id="startScreen">
+      <div class="logo-box">
         <span class="logo-top">BLUE STRIKE</span>
         <span class="logo-bottom">MATCH 3D SAGA</span>
       </div>
-      <div class="hero-avatar" id="mainAvatar"></div>
-      <button class="btn-main" onclick="Game.init()">⚽ ENTRAR AL ESTADIO</button>
-      <p class="hint-text">Sube el volumen multimedia de tu celular 🔊</p>
+      
+      <!-- AVATAR HACIENDO DOMINADAS -->
+      <div class="avatar-container">
+        <div class="player-hair"></div>
+        <div class="player-head"></div>
+        <div class="player-body"></div>
+        <div class="player-leg-l"><div class="player-shoe"></div></div>
+        <div class="player-leg-r"><div class="player-shoe"></div></div>
+        <div class="player-ball"></div>
+      </div>
+
+      <button class="btn-main" onclick="initGame()">ENTRAR AL ESTADIO</button>
+      <p style="font-family:'Nunito'; color:#94a3b8; font-size:12px; margin-top:20px;">Activa el volumen de tu celular 🔊</p>
     </div>
 
-    <!-- 2. HUD SUPERIOR (Recursos) -->
+    <!-- HUD -->
     <div class="top-navbar">
-      <div class="hud-pill">❤️ <span id="ui-lives">5</span></div>
-      <div class="hud-pill">🪙 <span id="ui-coins">0</span></div>
-      <div class="hud-pill">⭐ <span id="ui-stars">0</span></div>
+      <div class="hud-pill">❤️ 5</div>
+      <div class="hud-pill">🪙 <span id="uiCoins">150</span></div>
+      <div class="hud-pill">🏆 <span id="uiLevel">1</span></div>
     </div>
 
-    <!-- 3. PANTALLA DEL MAPA DE NIVELES -->
-    <div id="mapView" class="view-screen">
-      <div class="header-title">TORNEO MUNDIAL</div>
-      <div class="world-map-container" id="pathContainer"></div>
+    <!-- MAPA ZIGZAG -->
+    <div id="mapView" class="map-screen">
+      <div id="pathContainer" style="display:flex; flex-direction:column-reverse; width:100%; align-items:center;"></div>
     </div>
 
-    <!-- 4. PANTALLA MI ESTADIO (Constructor) -->
-    <div id="stadiumView" class="view-screen hidden">
-      <div class="header-title">MI ESTADIO</div>
-      <div class="stadium-graphics" id="stadiumVisuals"></div>
-      <div class="stadium-upgrades" id="upgradesList"></div>
+    <!-- JUEGO MATCH 3 -->
+    <div id="gameView" class="game-screen hidden">
+      <div style="display:flex; justify-content:space-between; width:100%; max-width:380px; margin-bottom:15px;">
+        <div class="hud-pill">🎯 <span id="inScore">0</span>/<span id="inGoal">500</span></div>
+        <div class="hud-pill" style="color:#0088ff;">🔄 <span id="inMoves">15</span></div>
+      </div>
+      <div class="grid-container"><div class="grid-board" id="grid"></div></div>
+      <button class="btn-main" style="margin-top:20px; background: #ef4444; border-color:#fca5a5; box-shadow: 0 6px 0 #7f1d1d;" onclick="quitGame()">RENDIRSE</button>
     </div>
 
-    <!-- 5. PANTALLA DEL TABLERO DE JUEGO (Match-3) -->
-    <div id="gameView" class="view-screen hidden">
-      <div class="hud-game">
-        <div class="hud-pill">🏆 <span id="ui-level">1</span></div>
-        <div class="hud-pill">🎯 <span id="ui-score">0</span>/<span id="ui-goal">500</span></div>
-        <div class="hud-pill highlight">🔄 <span id="ui-moves">15</span></div>
-      </div>
-      
-      <!-- Contenedor del Tablero -->
-      <div class="grid-wrapper">
-        <div id="tutorialMsg" class="tutorial-box hidden"></div>
-        <div id="gridBoard" class="grid-board"></div>
-      </div>
-      
-      <!-- Boosters Inferiores -->
-      <div class="ingame-boosters">
-        <button class="btn-booster" onclick="Game.useBooster('hammer')">🔨</button>
-        <button class="btn-booster" onclick="Game.useBooster('shuffle')">🔀</button>
-      </div>
-      
-      <button class="btn-danger" onclick="Game.quitLevel()">RENDIRSE</button>
-    </div>
-
-    <!-- 6. NAVEGACIÓN INFERIOR (Pestañas) -->
-    <div class="bottom-nav">
-      <div class="nav-tab active" id="tabTorneo" onclick="Game.switchTab('torneo')">
-        <span class="nav-icon">🏆</span><span>TORNEO</span>
-      </div>
-      <div class="nav-tab" id="tabEstadio" onclick="Game.switchTab('estadio')">
-        <span class="nav-icon">🏟️</span><span>MI ESTADIO</span>
-      </div>
-    </div>
-
-    <!-- 7. MODALES Y POPUPS -->
-    <div id="msgCombo" class="combo-popup">¡GOLAZO!</div>
-    
-    <div id="modalWin" class="modal hidden">
+    <!-- MODAL VICTORIA -->
+    <div class="modal hidden" id="modalWin">
       <div class="modal-content">
-        <h2 class="title-win">¡VICTORIA!</h2>
-        <div class="stars-reward" id="winStars">⭐⭐⭐</div>
-        <p class="reward-text">+50 Monedas 🪙</p>
-        <button class="btn-main" onclick="Game.claimVictory()">CONTINUAR</button>
-      </div>
-    </div>
-
-    <div id="modalLose" class="modal hidden">
-      <div class="modal-content">
-        <h2 class="title-lose">¡FIN DEL TIEMPO!</h2>
-        <p class="reward-text">Te quedaste sin movimientos.</p>
-        <button class="btn-main" onclick="Game.quitLevel()">VOLVER AL MAPA</button>
+        <h2 style="color:#0088ff; font-size:32px; margin-top:0;">¡VICTORIA!</h2>
+        <p style="font-family:'Nunito'; font-size:18px; color:#475569;">Nivel completado.<br><br><span style="font-size:26px; color:#eab308; font-weight:900;">+50 Monedas 🪙</span></p>
+        <button class="btn-main" style="width:100%;" onclick="nextLevel()">CONTINUAR</button>
       </div>
     </div>
 
   </div>
 
-  <!-- Aquí conectamos la lógica del juego (Tercer archivo) -->
-  <script src="game.js"></script>
+  <script>
+    // GRÁFICOS 3D REALES (Enlaces directos a PNGs transparentes de alta calidad)
+    const ITEMS = [
+      `<img src="https://img.icons8.com/3d-fluency/250/soccer-ball.png">`,
+      `<img src="https://img.icons8.com/3d-fluency/250/trophy.png">`,
+      `<img src="https://img.icons8.com/3d-fluency/250/sneakers.png">`,
+      `<img src="https://img.icons8.com/3d-fluency/250/security-shield-green.png">`,
+      `<img src="https://img.icons8.com/3d-fluency/250/whistle.png">`
+    ];
+
+    const ROWS = 7, COLS = 7;
+    let board = [], selected = null, processing = false, levelDone = false;
+    let curLevel = parseInt(localStorage.getItem('bs_lvl')) || 1;
+    let coins = parseInt(localStorage.getItem('bs_coins')) || 150;
+    let score = 0, goal = 500, moves = 15;
+    let actx = null;
+
+    function playSound(type) {
+      if(!actx) return;
+      let osc = actx.createOscillator(), gain = actx.createGain();
+      osc.connect(gain); gain.connect(actx.destination);
+      if(type === 'pop') {
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(500, actx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1000, actx.currentTime+0.1);
+        gain.gain.setValueAtTime(0.8, actx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime+0.1);
+        osc.start(); osc.stop(actx.currentTime+0.1);
+      } else if (type === 'win') {
+        osc.type = 'square'; osc.frequency.setValueAtTime(800, actx.currentTime);
+        osc.frequency.setValueAtTime(1200, actx.currentTime+0.15);
+        gain.gain.setValueAtTime(0.5, actx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime+0.5);
+        osc.start(); osc.stop(actx.currentTime+0.5);
+      }
+    }
+
+    function initGame() {
+      if(!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if(actx.state === 'suspended') actx.resume();
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('uiCoins').innerText = coins;
+      document.getElementById('uiLevel').innerText = curLevel;
+      renderMap();
+    }
+
+    function renderMap() {
+      const cont = document.getElementById('pathContainer');
+      cont.innerHTML = '';
+      for(let i=1; i<=Math.max(15, curLevel + 3); i++) {
+        let node = document.createElement('div');
+        node.className = 'map-node';
+        if(i < curLevel) node.classList.add('completed');
+        if(i === curLevel) node.classList.add('active');
+        node.innerText = i < curLevel ? '✔' : i;
+        
+        let offset = Math.sin(i * 1.2) * 80; 
+        node.style.transform = `translateX(${offset}px) ${i===curLevel?'scale(1.2)':''}`;
+        if(i <= curLevel) node.onclick = () => loadLevel(i);
+        cont.appendChild(node);
+      }
+    }
+
+    function loadLevel(l) {
+      score = 0; moves = l===1 ? 8 : Math.max(12, 20 - Math.floor(l/3)); goal = l===1 ? 200 : 400 + (l*150);
+      levelDone = false;
+      document.getElementById('mapView').classList.add('hidden');
+      document.getElementById('gameView').classList.remove('hidden');
+      document.getElementById('inScore').innerText = score;
+      document.getElementById('inGoal').innerText = goal;
+      document.getElementById('inMoves').innerText = moves;
+      
+      do {
+        board = [];
+        for(let r=0; r<ROWS; r++) {
+          board[r] = [];
+          for(let c=0; c<COLS; c++) board[r][c] = Math.floor(Math.random() * ITEMS.length);
+        }
+      } while(findMatches().length > 0);
+      drawBoard();
+    }
+
+    function drawBoard() {
+      let grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      for(let r=0; r<ROWS; r++) {
+        for(let c=0; c<COLS; c++) {
+          let cell = document.createElement('div');
+          cell.className = 'cell';
+          if(selected && selected.r === r && selected.c === c) cell.classList.add('selected');
+          if(board[r][c] !== null) cell.innerHTML = ITEMS[board[r][c]];
+          cell.onclick = () => tapCell(r, c);
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    async function tapCell(r, c) {
+      if(processing || levelDone) return;
+      if(!selected) { selected = {r,c}; drawBoard(); } 
+      else {
+        if(Math.abs(selected.r - r) + Math.abs(selected.c - c) === 1) {
+          processing = true;
+          let temp = board[selected.r][selected.c]; board[selected.r][selected.c] = board[r][c]; board[r][c] = temp;
+          drawBoard();
+          let m = findMatches();
+          if(m.length > 0) {
+            moves--; document.getElementById('inMoves').innerText = moves;
+            await resolveMatches();
+          } else {
+            temp = board[selected.r][selected.c]; board[selected.r][selected.c] = board[r][c]; board[r][c] = temp;
+            drawBoard();
+          }
+          selected = null; processing = false;
+        } else { selected = {r,c}; drawBoard(); }
+      }
+    }
+
+    function findMatches() {
+      let matched = new Set();
+      for(let r=0; r<ROWS; r++) for(let c=0; c<COLS-2; c++) { let v = board[r][c]; if(v!==null && v===board[r][c+1] && v===board[r][c+2]) { matched.add(`${r},${c}`); matched.add(`${r},${c+1}`); matched.add(`${r},${c+2}`); } }
+      for(let c=0; c<COLS; c++) for(let r=0; r<ROWS-2; r++) { let v = board[r][c]; if(v!==null && v===board[r+1][c] && v===board[r+2][c]) { matched.add(`${r},${c}`); matched.add(`${r+1},${c}`); matched.add(`${r+2},${c}`); } }
+      return Array.from(matched).map(s => { let [r,c] = s.split(',').map(Number); return {r,c}; });
+    }
+
+    async function resolveMatches() {
+      let m = findMatches();
+      while(m.length > 0) {
+        playSound('pop'); if(navigator.vibrate) navigator.vibrate(40);
+        score += m.length * 30; document.getElementById('inScore').innerText = score;
+        m.forEach(({r,c}) => { board[r][c] = null; let cell = document.getElementById('grid').children[r*COLS + c]; if(cell) cell.classList.add('exploding'); });
+        await new Promise(r => setTimeout(r, 250));
+        for(let c=0; c<COLS; c++) {
+          let er = ROWS-1;
+          for(let r=ROWS-1; r>=0; r--) { if(board[r][c] !== null) { board[er][c] = board[r][c]; if(er !== r) board[r][c] = null; er--; } }
+          for(let r=er; r>=0; r--) board[r][c] = Math.floor(Math.random() * ITEMS.length);
+        }
+        drawBoard(); await new Promise(r => setTimeout(r, 300)); m = findMatches();
+      }
+      if(score >= goal && !levelDone) {
+        levelDone = true; setTimeout(() => { playSound('win'); document.getElementById('modalWin').classList.remove('hidden'); }, 500);
+      } else if (moves <= 0 && !levelDone) { levelDone = true; alert("¡Sin movimientos!"); quitGame(); }
+    }
+
+    function nextLevel() {
+      document.getElementById('modalWin').classList.add('hidden');
+      coins += 50; if(curLevel === parseInt(document.getElementById('uiLevel').innerText)) curLevel++;
+      localStorage.setItem('bs_lvl', curLevel); localStorage.setItem('bs_coins', coins);
+      document.getElementById('uiCoins').innerText = coins; document.getElementById('uiLevel').innerText = curLevel;
+      quitGame();
+    }
+
+    function quitGame() { document.getElementById('gameView').classList.add('hidden'); document.getElementById('mapView').classList.remove('hidden'); renderMap(); }
+  </script>
 </body>
 </html>
